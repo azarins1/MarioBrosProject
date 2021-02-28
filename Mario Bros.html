@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<header>
+    <title>Super Mario Bros</title>
+    <link rel="shortcut icon" type="image/jpg" href="ItemBlock.png" />
+</header>
+
+<body>
+    <canvas id="gameCanvas" width=1000 height=600></canvas>
+</body>
+<script>
+    let canvas = document.getElementById("gameCanvas");
+    let ctx = canvas.getContext("2d");
+
+    //KEY: B=block, I=itemBlock, M=Mario
+    let level = 0;
+    const LEVELS = [
+        //first level as 2d array
+        [
+            [],//1
+            [],
+            [],//3
+            [],
+            [],//5
+            ["B", "B", "B", "B"],
+            ["B", "B", "B", "B"],//7
+            ["B", "I", "B", "B"],
+            ["B", "B", "I", "B",],//9
+            ["B", 1, "B"],
+            ["B", 2, "B"],//11
+            ["B", "B", "B", "B", "I"],
+        ]
+    ];
+    var tallyI = 0;
+    var tallyB = 0;
+    var tallyNum = 0;
+    function returnURL(blockType) {
+        if (blockType == "I") {
+            tallyI++;
+            return "./ItemBLock.png";
+        } else if (blockType == "B") {
+            tallyB++;
+            return "./Brick.png"
+        } else if (blockType == "S") {
+            return "./Spikes.png"
+        } else {
+            tallyNum++;
+            return null;
+        }
+    }
+    function draw() {
+        ctx.fillStyle = "cyan";
+        ctx.fillRect(0, 0, 1000, 1000);
+        for (let y = 0; y < LEVELS[level].length; y++) {
+            let xPos = 0;
+            let extraXPad = 0;
+            //moving down through the y, so lets display the rows
+            for (let x = 0; x < LEVELS[level][y].length + extraXPad; x++) {
+                //moving right through the x, so lets draw the squares
+                console.log(typeof LEVELS[level][y][x]);
+                if (returnURL(LEVELS[level][y][x]) == null) {
+                    //We just want padding
+                    xPos += LEVELS[level][y][x] * 50;
+                    extraXPad += LEVELS[level][y][x];
+                } else {
+                    let protoImage = new Image;
+                    protoImage.src = returnURL(LEVELS[level][y][x]);
+                    protoImage.onload = () => {
+                        ctx.drawImage(protoImage, xPos, y * 50, 50, 50);
+                        console.log("drew image at ", xPos, (50 * y));
+                    }
+                }
+                xPos = xPos + 50;
+            }
+        }
+    }
+    draw();
+    console.log("I:", tallyI, "B:", tallyB, "Num:", tallyNum);
+</script>
+
+</html>
