@@ -9,6 +9,16 @@
     <canvas id="gameCanvas" width=1000 height=600></canvas>
 </body>
 <script>
+    var jumpSound = document.createElement("AUDIO");
+    jumpSound.src = "./Sounds/smw_jump.wav";
+
+    var mushroomAppearSound = document.createElement("AUDIO");
+    mushroomAppearSound.src = "./Sounds/smw_power-up_appears.wav";
+
+
+    var coinSound = document.createElement("AUDIO");
+    coinSound.src = "./Sounds/smw_coin.wav";
+
     let canvas = document.getElementById("gameCanvas");
     let ctx = canvas.getContext("2d");
 
@@ -56,10 +66,12 @@
         //First 2 floors
         MarioGame.addBlock("Brick", 0, 0, 5);
         MarioGame.addBlock("Brick", 6, 0, 5);
-        
+
+        MarioGame.addBlock("Coin", 3, 0);
         //Item Block Floating Zone
-        MarioGame.addBlock("Brick", 8, 4, 3);
-        MarioGame.addBlock("ItemBlock", 9, 4, 1);
+        MarioGame.addBlock("Brick", 8, 4, 1);
+        //MarioGame.addBlock("ItemBlock", 9, 4, 1);
+        MarioGame.addBlock("Brick", 10, 4, 1);
 
         //Staircase Zone
         MarioGame.addBlock("Brick", 13, 0, 15);
@@ -94,12 +106,17 @@
                 picture = brick;
             } if (MarioGame.blocks[block][0] == "ItemBlock") {
                 picture = itemBlock;
+            } if (MarioGame.blocks[block][0] == "Coin") {
+                picture = coin;
             } else {
-                picture = brick;
+                console.log(MarioGame.blocks[block][0])
+                picture = null;
             }
             let xPos = MarioGame.blocks[block][1];
             let yPos = MarioGame.blocks[block][2];
-            ctx.drawImage(picture, xPos * 50 - (MarioGame.playerX * 50) + 500, 550 - (yPos * 50), 50, 50);
+            if (picture != null) {
+                ctx.drawImage(picture, xPos * 50 - (MarioGame.playerX * 50) + 500, 550 - (yPos * 50), 50, 50);
+            }
             //ctx.drawImage(picture, xPos * 50, 550 - (yPos * 50), 50, 50);
         }
         ctx.fillStyle = "Black";
@@ -125,14 +142,14 @@
                 MarioGame.velocityX = 0;
             }
         }
-        if(MarioGame.velocityX > 0){
-            if (MarioGame.blockAt(nearestBlockX + 1, nearestBlockY) != false || MarioGame.blockAt(nearestBlockX + 1, nearestBlockY + 1) != false){
+        if (MarioGame.velocityX > 0) {
+            if (MarioGame.blockAt(nearestBlockX + 1, nearestBlockY) != false || MarioGame.blockAt(nearestBlockX + 1, nearestBlockY + 1) != false) {
                 MarioGame.velocityX = 0;
                 MarioGame.playerX = nearestBlockX;
             }
         }
-        if(MarioGame.velocityX < 0){
-            if (MarioGame.blockAt(nearestBlockX - 1, nearestBlockY) != false || MarioGame.blockAt(nearestBlockX - 1, nearestBlockY + 1) != false){
+        if (MarioGame.velocityX < 0) {
+            if (MarioGame.blockAt(nearestBlockX - 1, nearestBlockY) != false || MarioGame.blockAt(nearestBlockX - 1, nearestBlockY + 1) != false) {
                 MarioGame.velocityX = 0;
                 MarioGame.playerX = nearestBlockX;
             }
@@ -145,6 +162,8 @@
         if (upKey == true) {
             if (MarioGame.blockAt(nearestBlockX, nearestBlockY - 1) != false) {
                 MarioGame.velocityY += 0.6;
+                jumpSound.currentTime = 0;
+                jumpSound.play();
             }
         }
         if (MarioGame.blockAt(nearestBlockX, nearestBlockY - 1) != false) {
@@ -184,6 +203,8 @@
     }
     var brick = new Image;
     brick.src = "./Brick.png";
+    var coin = new Image;
+    coin.src = "./Coin.png";
     var itemBlock = new Image;
     itemBlock.src = "./ItemBlock.png";
     var spikes = new Image;
